@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import Ionicons from 'react-native-vector-icons/Ionicons' // Corrected typo: Ionicons
 import { RootStackParamList, BottomTabParamList } from './src/types/navigation'
+import { Userprovider } from './src/context/UserContext'
 
 // import screens
 import HomeScreen from './screens/HomeScreen'
@@ -95,11 +96,14 @@ const MainTabs = () => {
 const App = () => {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainTabs" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="MainTabs" component={MainTabs} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <Userprovider>
+        {/* Wrap the entire app in Userprovider to provide context */}
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="MainTabs" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Userprovider>
     </SafeAreaProvider>
   )
 }
