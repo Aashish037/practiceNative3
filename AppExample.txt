@@ -1,0 +1,83 @@
+it is a stack navigation example
+---it is a navigation which is on top of each other and option is to go back and forth.
+
+App.tsx
+-------------------
+// import { View, Text } from 'react-native'
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import HomeScreen from './screens/HomeScreen'
+import ProfileScreen from './screens/ProfileScreen'
+
+// Import your RootStackParamList
+import { RootStackParamList } from './src/types/navigation'; // Adjust path as necessary
+
+// Pass RootStackParamList to createNativeStackNavigator
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <SafeAreaProvider>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ title: 'Home' }} />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: 'Profile' }}
+            />
+        </Stack.Navigator>
+      </SafeAreaProvider>
+    </NavigationContainer>
+  )
+}
+
+export default App
+---------------------------------
+
+HomeScreen.tsx
+---------------
+import { View, Text, StyleSheet, Button } from 'react-native'
+import React from 'react'
+import { RootStackScreenProps } from '../src/types/navigation'
+
+
+const HomeScreen = ({ navigation}: RootStackScreenProps<'Home'>) => {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.text}>HomeScreen</Text>
+                <Button
+                title="Go to Profile"
+                onPress={() => navigation.navigate('Profile')}
+                />
+            </View>
+        )
+}
+
+export default HomeScreen
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0',
+    },
+    text: {
+        fontSize: 24,
+        color: '#333',
+    },
+})
+
+-------------------
+
+profile.tsx
+----------
+normal boiler code 
+
+and this will run the stack navigation 
