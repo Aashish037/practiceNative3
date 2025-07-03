@@ -1,0 +1,23 @@
+// This file defines a UserContext using React's Context API
+// It provides a way to manage user-related state such as username and dark mode preference
+// The context can be used throughout the application to access and update user information
+// It also includes a custom hook to easily access the context in functional components
+// The UserProvider component wraps the application and provides the context to its children
+// The context includes methods to set the username and toggle dark mode
+// This allows components to easily access and modify user-related state without prop drilling
+// // The context also includes methods to set user email, bio, and profile image
+// // The context is created using React's createContext method 
+// // and provides a way to manage user-related state such as username, email, bio, profile image, and dark mode preference
+// // The context can be used throughout the application to access and update user information  
+
+
+Userprovider
+
+// UserProvider component that provides the UserContext to its children
+// This component manages the state of the username and dark mode
+// It uses React's useState hook to manage the state
+// It also provides a function to toggle the dark mode
+// The UserContext is created using React's createContext method
+// The UserContext is then provided to its children using the UserContext.Provider component
+// // The UserProvider component is used to wrap the application in the App.tsx file
+// // This allows any component in the application to access the UserContext
