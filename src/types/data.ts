@@ -1,10 +1,11 @@
 // https://jsonplaceholder.typicode.com/ will fetchig the data frommthis Api for the explore screen
 
 export interface Post {
-    userId: number;
+    // userId: number;
     id: number;
     title: string;
-    body: string;
+    body?: string;
+    imageUrl?: string; // Optional field for image URL
 }
 
 export interface User {

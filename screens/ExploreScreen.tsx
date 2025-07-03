@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ActivityIndicator, Image } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { useUserContext } from '../src/context/UserContext'
-import { Post } from '../src/types/data'
+import { Post } from '../src/types/data' 
 
 const ExploreScreen = () => {
 
@@ -17,7 +17,9 @@ const ExploreScreen = () => {
             setLoading(true); // Set loading to true before starting fetch
             setError(null);   // Clear any previous errors
 
-            const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+            // --- calling API URL ---
+            const response = await fetch('https://api.imgflip.com/get_memes'); // Fetching 10 memes
+            // --- END calling API URL ---
 
             // Check if the network request was successful
             if (!response.ok) {
@@ -25,10 +27,25 @@ const ExploreScreen = () => {
             throw new Error(`HTTP error! status: ${response.status}`);
             }
             // Parse the JSON response
-            const data: Post[] = await response.json(); // Explicitly type the parsed JSON
-            setPosts(data); // Update state with fetched posts
+            const json = await response.json(); // Parse as general JSON first
+            console.log('API Response:', json); // Debug log
+
+            // Check if the response has the expected structure
+            if (json && json.success && json.data && Array.isArray(json.data.memes)) {
+                const formattedMemes: Post[] = json.data.memes.slice(0, 10).map((meme: any) => ({
+                    id: meme.id,
+                    title: meme.name,
+                    imageUrl: meme.url, // Directly use the image URL
+                    body: `Meme template with ${meme.width}x${meme.height} dimensions` // Optional body with meme info
+                }));
+                setPosts(formattedMemes);
+            } else {
+                setError('Failed to fetch memes: Invalid data structure from API.');
+            }
+            
+
         } catch (e: any) { // Catch any errors during fetch or JSON parsing
-            console.error("Failed to fetch posts:", e); // Log for debugging
+            console.error("Failed to fetch memes:", e); // Log for debugging
             setError(e.message || 'An unknown error occurred'); // Set error message
         } finally {
             setLoading(false); // Set loading to false regardless of success or failure
@@ -44,7 +61,7 @@ const ExploreScreen = () => {
         return (
         <View style={[styles.container, styles.loadingErrorContainer, isDarkMode && styles.darkContainer]}>
             <ActivityIndicator size="large" color={isDarkMode ? '#fff' : '#0000ff'} />
-            <Text style={[styles.statusText, isDarkMode && styles.darkText]}>Loading posts...</Text>
+            <Text style={[styles.statusText, isDarkMode && styles.darkText]}>Loading memes...</Text>
         </View>
         );
     }
@@ -54,7 +71,46 @@ const ExploreScreen = () => {
         <View style={[styles.container, styles.loadingErrorContainer, isDarkMode && styles.darkContainer]}>
             <Text style={[styles.statusText, styles.errorText]}>Error: {error}</Text>
             <Text style={[styles.statusText, isDarkMode && styles.darkText]}>Please try again later.</Text>
-            {/* You could add a retry button here */}
+            <TouchableOpacity 
+                style={[styles.retryButton, isDarkMode && styles.darkRetryButton]} 
+                onPress={() => {
+                    setError(null);
+                    setLoading(true);
+                    // Re-run the fetch
+                    const fetchPosts = async () => {
+                        try {
+                            setLoading(true);
+                            setError(null);
+                            const response = await fetch('https://api.imgflip.com/get_memes');
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            const json = await response.json();
+                            console.log('API Response:', json);
+                            
+                            if (json && json.success && json.data && Array.isArray(json.data.memes)) {
+                                const formattedMemes: Post[] = json.data.memes.slice(0, 10).map((meme: any) => ({
+                                    id: meme.id,
+                                    title: meme.name,
+                                    imageUrl: meme.url,
+                                    body: `Meme template with ${meme.width}x${meme.height} dimensions`
+                                }));
+                                setPosts(formattedMemes);
+                            } else {
+                                setError('Failed to fetch memes: Invalid data structure from API.');
+                            }
+                        } catch (e: any) {
+                            console.error("Failed to fetch memes:", e);
+                            setError(e.message || 'An unknown error occurred');
+                        } finally {
+                            setLoading(false);
+                        }
+                    };
+                    fetchPosts();
+                }}
+            >
+                <Text style={[styles.retryButtonText, isDarkMode && styles.darkRetryButtonText]}>Retry</Text>
+            </TouchableOpacity>
         </View>
         );
     }
@@ -63,20 +119,29 @@ const ExploreScreen = () => {
     const renderItem = ({ item }: { item: Post }) => ( // Explicitly type 'item' in renderItem
         <TouchableOpacity
         style={[styles.postItem, isDarkMode && styles.darkPostItem]}
-        onPress={() => Alert.alert(item.title, item.body)} // Simple alert on press
+        onPress={() => Alert.alert(item.title, item.body || 'No description available')} // Handle optional body
         >
+        <Image 
+            source={{ uri: item.imageUrl }} 
+            style={styles.memeImage} 
+            resizeMode="contain"
+        />
         <Text style={[styles.postTitle, isDarkMode && styles.darkText]}>{item.title}</Text>
-        <Text style={[styles.postBody, isDarkMode && styles.darkText]}>{item.body.substring(0, 100)}...</Text>
+        <Text style={[styles.postBody, isDarkMode && styles.darkText]}>
+            {item.body ? item.body.substring(0, 100) + '...' : 'Tap to view meme details'}
+        </Text>
         </TouchableOpacity>
     );
 
     return (
         <View style={[styles.container, isDarkMode && styles.darkContainer]}>
-        <Text style={[styles.screenTitle, isDarkMode && styles.darkText]}>Explore Posts</Text>
+        <Text style={[styles.screenTitle, isDarkMode && styles.darkText]}>Explore Memes</Text>
         <FlatList
             data={posts}          // The array of data to render
             renderItem={renderItem} // Function to render each item
-            keyExtractor={(item) => item.id.toString()} // Unique key for each item
+            // ---  3: Update keyExtractor for new API's ID ---
+            
+            keyExtractor={(item) => item.id.toString()} // Quotable API uses '_id' as a string
             contentContainerStyle={styles.listContentContainer} // Style for the content inside FlatList
         />
         </View>
@@ -135,6 +200,12 @@ const styles = StyleSheet.create({
         shadowRadius: 3,
         elevation: 2, // For Android shadow
     },
+    memeImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
+        marginBottom: 10,
+    },
     darkPostItem: {
         backgroundColor: '#333',
         borderColor: '#555',
@@ -148,5 +219,24 @@ const styles = StyleSheet.create({
     postBody: {
         fontSize: 14,
         color: '#666',
+    },
+    retryButton: {
+        backgroundColor: '#007bff',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 8,
+        marginTop: 15,
+    },
+    darkRetryButton: {
+        backgroundColor: '#555',
+    },
+    retryButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    darkRetryButtonText: {
+        color: '#fff',
     },
 });

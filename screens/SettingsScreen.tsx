@@ -8,7 +8,7 @@ const SettingsScreen = () => {
 
     return (
         <View style={[styles.container, isDarkMode && styles.darkContainer]}>
-            <Text style={[styles.text, isDarkMode && styles.darkText]}> AppSettings</Text>
+            <Text style={[styles.text, isDarkMode && styles.darkText]}> App Settings</Text>
 
             <View style={styles.settingItem}>
                 <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Dark Mode</Text>
@@ -16,7 +16,7 @@ const SettingsScreen = () => {
                 onValueChange={toggleDarkMode} // Updates global isDarkMode state
                 value={isDarkMode}            // Reflects current global isDarkMode state
                 trackColor={{ false: '#767577', true: '#81b0ff' }}
-                thumbColor={isDarkMode ? '#f5dd4b' : '#f4f3f4'}
+                thumbColor={isDarkMode ? '#81b0ff' : '#f4f3f4'}
                 />
             </View>
 

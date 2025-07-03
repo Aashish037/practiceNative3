@@ -169,7 +169,7 @@ const ProfileScreen = () => {
                     <Button
                         title="Save Profile"
                         onPress={handleSaveProfile}
-                        color={isDarkMode ? '#f5f' : '#007bff'} // Button color based on dark mode
+                        color={isDarkMode ? '#81b0ff' : '#007bff'} // Button color based on dark mode
                     />
                 </View>
             </ScrollView>
