@@ -1,21 +1,10 @@
-import { View, Text, Switch, StyleSheet, Alert, Button, TextInput } from 'react-native'
-import React, {useState, useEffect} from 'react'
+import { View, Text, Switch, StyleSheet,  } from 'react-native'
+import React  from 'react'
 import { useUserContext } from '../src/context/UserContext' // Assuming you have a UserContext for user data
 
 const SettingsScreen = () => {
 
-    const { username, setUsername, isDarkMode, toggleDarkMode } = useUserContext();
-
-    const [newUsername, setNewUsername] = useState(username);
-
-    useEffect(() => {
-        setNewUsername(username);
-    }, [username]); // Update local state when username changes in context
-
-    const handleUsernameChange = () => {
-        setUsername(newUsername);
-        Alert.alert("Username Updated", `Your username has been changed to ${newUsername}`);
-    };
+    const { isDarkMode, toggleDarkMode } = useUserContext();
 
     return (
         <View style={[styles.container, isDarkMode && styles.darkContainer]}>
@@ -31,7 +20,7 @@ const SettingsScreen = () => {
                 />
             </View>
 
-            <View style={styles.settingItem}>
+            {/* <View style={styles.settingItem}>
                 <Text style={[styles.settingLabel, isDarkMode && styles.darkText]}>Change Username</Text>
                 <TextInput
                 style={[styles.input, isDarkMode && styles.darkInput]}
@@ -41,7 +30,7 @@ const SettingsScreen = () => {
                 placeholderTextColor={isDarkMode ? '#bbb' : '#888'}
                 />
                 <Button title="Save Username" onPress={handleUsernameChange} /> {/* Updates global username state */}
-            </View>
+            {/* </View> */} 
 
         </View>
 
